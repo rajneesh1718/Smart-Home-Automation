@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <meta content="#0a1020" name="theme-color"/>
+  <title>
+   Haven — ESP32 Control Center
+  </title>
+  <style>
+   :root{color-scheme:dark;--bg:#0a1020;--sidebar:#0c1425;--panel:#131e31;--panel2:#172439;--line:#26354d;--text:#edf3ff;--muted:#94a5bf;--accent:#8799ff;--mint:#50ddb4;--rose:#ff8794;--amber:#fac77f;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}button,input,select{font:inherit}button{cursor:pointer}button:disabled,input:disabled,select:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}a{color:inherit;text-decoration:none}.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}.sidebar{position:sticky;top:0;align-self:start;height:100vh;padding:30px 18px;background:var(--sidebar);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:42px}.brand{display:flex;align-items:center;gap:11px;padding:0 10px}.brand-mark{width:39px;height:39px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(145deg,#a5adff,#665bdc);color:white;box-shadow:0 10px 26px #675feb3b}.brand-mark svg{width:22px;height:22px}.brand-name{font-size:19px;font-weight:800;letter-spacing:-.7px}.brand-caption{font-size:10px;letter-spacing:1.7px;color:var(--muted);font-weight:700}.nav-title{padding:0 14px 9px;color:#7385a1;font-size:10px;letter-spacing:2px;font-weight:800}.navigation{display:grid;gap:7px}.nav-link{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:11px;color:#a5b3c9;font-weight:600;transition:background .16s,color .16s}.nav-link svg{width:18px;height:18px}.nav-link:hover,.nav-link.active{color:#f4f6ff;background:#1e2a43}.nav-link.active{box-shadow:inset 3px 0 0 #9a9aff}.sidebar-foot{margin-top:auto;background:#17243a;border:1px solid #28374d;border-radius:15px;padding:15px}.sidebar-foot .tiny{display:block;margin-top:6px}.tiny{font-size:11px;color:var(--muted)}.workspace{min-width:0;padding:0 35px 50px;max-width:1530px;width:100%;margin:0 auto}.topbar{height:78px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:20px}.breadcrumb{color:var(--muted);font-size:12px}.breadcrumb strong{color:var(--text);font-weight:650}.top-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pill{border:1px solid var(--line);background:#152138;padding:7px 12px;border-radius:100px;color:#b9c9df;font-size:11px;font-weight:750;letter-spacing:.2px;display:inline-flex;align-items:center;gap:8px}.dot{width:7px;height:7px;border-radius:50%;background:#677791;flex:0 0 auto}.dot.live{background:var(--mint);box-shadow:0 0 0 3px #50ddb41b}.dot.error{background:var(--rose)}.page-title{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:29px 0 21px}.eyebrow{color:#a5afff;font-size:10px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase}.page-title h1{font-size:clamp(27px,3.5vw,37px);letter-spacing:-1.4px;margin:5px 0 3px;line-height:1.14}.muted{color:var(--muted)}.page-title p{margin:0;color:var(--muted)}.clock{font-variant-numeric:tabular-nums;font-size:12px;color:#b6c6de}.hero{position:relative;overflow:hidden;min-height:183px;display:flex;align-items:center;justify-content:space-between;border:1px solid #4a4b91;border-radius:19px;padding:29px 32px;background:radial-gradient(circle at 84% 39%,#414395 0%,transparent 38%),linear-gradient(112deg,#343c83 0%,#242b5a 57%,#17203c 100%);margin-bottom:24px}.hero:after{content:"";position:absolute;right:5%;top:-93px;border:1px solid #c9c4ff2e;border-radius:50%;width:360px;height:360px;box-shadow:0 0 0 48px #c9c4ff08,0 0 0 96px #c9c4ff05;pointer-events:none}.hero>*{position:relative;z-index:1}.hero h2{font-size:26px;letter-spacing:-.9px;margin:5px 0 8px}.hero p{margin:0;color:#d1d8ff;max-width:450px}.hero-badge{background:#ffffff14;border:1px solid #ffffff3d;padding:11px 14px;border-radius:13px;min-width:174px;backdrop-filter:blur(8px)}.hero-badge b{display:block;font-size:22px;line-height:1.3}.hero-badge span{color:#d0d6ff;font-size:11px}.section-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:27px 0 13px}.section-heading h2{font-size:17px;letter-spacing:-.4px;margin:0}.section-heading .sub{color:var(--muted);font-size:12px}.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:20px;min-width:0;box-shadow:0 8px 26px #0000000c}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.metric{min-height:157px}.metric-top{display:flex;justify-content:space-between;align-items:center;gap:8px}.metric-icon{height:36px;width:36px;display:grid;place-items:center;border-radius:10px;background:#293458;color:#b4bfff}.metric-icon svg{width:18px;height:18px}.metric-icon.aqua{background:#173c43;color:#60dfcd}.metric-icon.sun{background:#413523;color:#fbd48d}.metric-icon.signal{background:#273956;color:#a4c7ff}.metric-tag{font-size:10px;color:#9eafc8;background:#1d2b40;border-radius:30px;padding:4px 8px}.metric-label{color:#a6b5ca;font-size:12px;margin-top:18px}.metric-value{font-size:26px;font-weight:760;letter-spacing:-.85px;margin-top:2px;font-variant-numeric:tabular-nums}.metric-foot{font-size:11px;color:#748aa9;margin-top:6px}.devices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.device-card{padding:22px}.device-head{display:flex;align-items:center;gap:13px}.device-icon{height:47px;width:47px;display:grid;place-items:center;border-radius:14px;background:#4e293f;color:#ff98a9}.device-icon.green{background:#1d423b;color:#77e8c5}.device-icon svg{width:22px;height:22px}.device-name{font-size:16px;font-weight:760;letter-spacing:-.3px}.device-sub{font-size:11px;color:var(--muted);margin-top:2px}.device-state{margin-left:auto;padding:6px 10px;border:1px solid #344158;border-radius:8px;font-size:11px;font-weight:750;color:#b6c4d7;white-space:nowrap}.device-state.on{color:#6ce4bc;border-color:#2b6e62;background:#173b37}.device-state.off{color:#bec7da;background:#1d2a3c}.device-body{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:115px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:19px}.state-label{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted)}.big-state{font-size:29px;font-weight:800;letter-spacing:-1px;margin:2px 0}.mode-label{color:#a1b0c7;font-size:11px}.light-ring{height:78px;width:78px;border-radius:50%;border:1px solid #41516c;background:radial-gradient(circle at 32% 27%,#66748a,#273750 49%,#172337 76%);display:grid;place-items:center;flex:0 0 auto;transition:all .28s}.light-ring svg{width:33px;height:33px;color:#8b9bb7}.light-ring.is-on.red-light{background:radial-gradient(circle at 32% 28%,#ffd0d3,#ff7b92 40%,#ac3d59 75%);border-color:#ffacb7;box-shadow:0 0 32px #fd607a50}.light-ring.is-on.green-light{background:radial-gradient(circle at 32% 28%,#dcfff0,#54e2b3 40%,#237f6b 75%);border-color:#85edc9;box-shadow:0 0 32px #41dbab47}.light-ring.is-on svg{color:#fff}.control-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:17px}.control-row button{padding:10px 2px;border:1px solid #33445e;background:#1d2b42;border-radius:9px;color:#cdd8ea;font-size:11px;font-weight:750}.control-row button.primary-red{background:#69364b;color:#ffd7dd;border-color:#91455e}.control-row button.primary-green{background:#225847;color:#c2ffea;border-color:#377e67}.control-row button:hover:not(:disabled){background:#30415e}.device-feedback{min-height:32px;color:#a9bad1;font-size:11px;margin:12px 0 0;overflow-wrap:anywhere}.two-col{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(270px,.75fr);gap:14px}.section-description{color:var(--muted);font-size:12px;margin:5px 0 20px}.card h3{font-size:14px;margin:0 0 4px;letter-spacing:-.2px}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field label{display:block;font-size:11px;font-weight:650;color:#b6c5d9;margin-bottom:7px}.field input,.field select{width:100%;min-width:0;height:40px;border-radius:9px;border:1px solid #3b4a62;background:#0c1729;color:#ebf1ff;padding:8px 10px;outline:none}.field input:focus,.field select:focus{border-color:#888eff;box-shadow:0 0 0 3px #888eff1d}.field input[type=time]{color-scheme:dark}.divider{height:1px;background:var(--line);margin:22px 0}.preset-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.presetBtn{padding:9px 13px;color:#b9c9dd;background:#24334b;border:1px solid #3c4a63;border-radius:9px;font-size:11px;font-weight:700}.presetBtn:hover:not(:disabled){background:#344561}.schedule-group{padding:14px 0 0}.schedule-header{display:flex;justify-content:space-between;margin-bottom:12px;align-items:center}.schedule-name{font-weight:750;font-size:13px}.schedule-indicator{font-size:10px;color:#b3c2d8}.save{margin-top:20px;border:0;border-radius:10px;background:#8f9cff;color:#101735;padding:12px 17px;font-weight:800;width:100%}.save:hover:not(:disabled){background:#b2baff}.notice{font-size:11px;color:#acbcd2;overflow-wrap:anywhere;min-height:30px;margin:11px 0 0}.account-card .account-intro{display:flex;align-items:center;gap:13px;margin-bottom:20px}.avatar{display:grid;place-items:center;border-radius:11px;width:39px;height:39px;background:#273553;color:#b5bdff}.account-intro strong{font-size:14px}.account-intro span{display:block;font-size:11px;color:var(--muted)}.login-fields{display:grid;gap:12px}.account-actions{display:flex;gap:8px;margin-top:14px}.account-actions button,.login-button{min-height:41px;padding:9px 13px;border-radius:9px;font-weight:800;border:1px solid #374a66;background:#22334f;color:#c9d8ef}.login-button{background:#899aff;color:#101633;border:0;width:100%;margin-top:14px}.account-actions button{flex:1}.account-actions button:hover:not(:disabled),.login-button:hover:not(:disabled){filter:brightness(1.12)}.account-status{margin:15px 0 0;padding:12px;border-radius:9px;background:#0e1a2c;border:1px solid var(--line);font-size:11px;color:#acbdd6;overflow-wrap:anywhere}.activity{margin-top:18px}.activity .row{display:flex;gap:9px;align-items:start;padding:10px 0;border-top:1px solid var(--line);font-size:11px;color:#b9c8dd}.activity .row:first-child{border-top:0}.activity .mark{width:7px;height:7px;background:#90a1ff;border-radius:50%;margin-top:6px;flex:0 0 auto}.activity time{display:block;color:#7e91ac;font-size:10px;margin-top:2px}.footer{margin:25px 0 0;color:#8193ac;font-size:11px;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:1150px){.workspace{padding:0 22px 35px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}}
+    @media(max-width:760px){.app{display:block}.sidebar{position:relative;height:auto;padding:14px 16px;gap:12px}.brand{padding:0}.navigation{display:flex;gap:5px;overflow:auto}.nav-title,.sidebar-foot{display:none}.nav-link{white-space:nowrap;padding:9px 10px;font-size:11px}.nav-link svg{width:15px;height:15px}.workspace{padding:0 15px 25px}.topbar{height:57px}.page-title{margin:23px 0 17px}.clock{display:none}.hero{padding:23px;min-height:156px}.hero-badge{display:none}.devices{grid-template-columns:1fr}.metrics{gap:9px}.metric{min-height:138px;padding:14px}.metric-value{font-size:23px}.metric-label{margin-top:12px}.field input,.field select{font-size:16px}}
+    @media(max-width:380px){.metrics,.fields{grid-template-columns:1fr}.metric{min-height:125px}.control-row{grid-template-columns:repeat(2,1fr)}.hero h2{font-size:22px}.top-status .pill:last-child{display:none}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:after{transition:none!important}}
+  </style>
+ </head>
+ <body>
+  <div class="app">
+   <aside aria-label="Primary navigation" class="sidebar">
+    <a aria-label="Haven control center home" class="brand" href="#overview">
+     <span class="brand-mark">
+      <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+       <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z">
+       </path>
+       <path d="M9 21v-7h6v7">
+       </path>
+      </svg>
+     </span>
+     <span>
+      <span class="brand-name">
+       haven.
+      </span>
+      <span class="brand-caption" style="display:block">
+       CONTROL CENTER
+      </span>
+     </span>
+    </a>
+    <div>
+     <div class="nav-title">
+      WORKSPACE
+     </div>
+     <nav class="navigation">
+      <a class="nav-link active" href="#overview">
+       <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+        <rect height="7" rx="1" width="7" x="3" y="3">
+        </rect>
+        <rect height="7" rx="1" width="7" x="14" y="3">
+        </rect>
+        <rect height="7" rx="1" width="7" x="3" y="14">
+        </rect>
+        <rect height="7" rx="1" width="7" x="14" y="14">
+        </rect>
+       </svg>
+       Overview
+      </a>
+      <a class="nav-link" href="#devices">
+       <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24">
+        <rect height="16" rx="3" width="14" x="5" y="4">
+        </rect>
+        <path d="M9 9h6M9 14h6">
+        </path>
+       </svg>
+       Devices
+      </a>
+      <a class="nav-link" href="#automation">
+       <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24">
+        <path d="M12 3v3m0 12v3M3 12h3m12 0h3M6 6l2 2m8 8 2 2m0-12-2 2M8 16l-2 2">
+        </path>
+        <circle cx="12" cy="12" r="4">
+        </circle>
+       </svg>
+       Automation
+      </a>
+      <a class="nav-link" href="#account">
+       <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24">
+        <circle cx="12" cy="8" r="4">
+        </circle>
+        <path d="M4 21c0-5 3-7 8-7s8 2 8 7">
+        </path>
+       </svg>
+       Account
+      </a>
+     </nav>
+    </div>
+    <div class="sidebar-foot">
+     <div style="font-weight:750;font-size:12px">
+      ESP32 • V2 prototype
+     </div>
+     <span class="tiny">
+      Local automation continues without this page when firmware and power are available.
+     </span>
+     <span class="tiny">
+      Low-voltage LED circuit only
+     </span>
+    </div>
+   </aside>
+   <main class="workspace" id="overview">
+    <div class="topbar">
+     <span class="breadcrumb">
+      Workspace
+      <span style="padding:0 8px;color:#586e91">
+       /
+      </span>
+      <strong>
+       Overview
+      </strong>
+     </span>
+     <div class="top-status">
+      <span class="pill">
+       <span class="dot" id="firebaseDot">
+       </span>
+       <span id="firebaseBadge">
+        Cloud disconnected
+       </span>
+      </span>
+      <span class="pill">
+       <span class="dot" id="deviceDot">
+       </span>
+       <span id="deviceBadge">
+        Device unverified
+       </span>
+      </span>
+     </div>
+    </div>
+    <div class="page-title">
+     <div>
+      <div class="eyebrow">
+       YOUR SMART SPACE
+      </div>
+      <h1>
+       Home overview
+      </h1>
+      <p>
+       Monitor your sensors, lighting and automation from one place.
+      </p>
+     </div>
+     <time aria-label="Current Indian Standard Time" class="clock" id="clock">
+      IST • --:--
+     </time>
+    </div>
+    <section aria-label="Workspace introduction" class="hero">
+     <div>
+      <div class="eyebrow" style="color:#bfc7ff">
+       YOUR CONTROL CENTER
+      </div>
+      <h2>
+       Everything at a glance.
+      </h2>
+      <p>
+       A simple, focused workspace for your ESP32 home automation prototype.
+      </p>
+     </div>
+     <div class="hero-badge">
+      <b>
+       02
+      </b>
+      <span>
+       Configured light channels
+      </span>
+     </div>
+    </section>
+    <section aria-labelledby="sensorHeading">
+     <div class="section-heading">
+      <h2 id="sensorHeading">
+       Environment &amp; connectivity
+      </h2>
+      <span class="sub" id="onlineStatus">
+       Waiting for telemetry
+      </span>
+     </div>
+     <div class="metrics">
+      <article class="card metric">
+       <div class="metric-top">
+        <span class="metric-icon">
+         <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24">
+          <path d="M10 14V5a3 3 0 0 1 6 0v9a5 5 0 1 1-6 0Z">
+          </path>
+          <path d="M13 10v8">
+          </path>
+         </svg>
+        </span>
+        <span class="metric-tag">
+         DHT11
+        </span>
+       </div>
+       <div class="metric-label">
+        Temperature
+       </div>
+       <div class="metric-value" id="temperature">
+        --
+       </div>
+       <div class="metric-foot">
+        Degrees Celsius
+       </div>
+      </article>
+      <article class="card metric">
+       <div class="metric-top">
+        <span class="metric-icon aqua">
+         <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24">
+          <path d="M12 3s-7 8-7 12a7 7 0 0 0 14 0c0-4-7-12-7-12Z">
+          </path>
+          <path d="M9 16a3 3 0 0 0 3 3">
+          </path>
+         </svg>
+        </span>
+        <span class="metric-tag">
+         DHT11
+        </span>
+       </div>
+       <div class="metric-label">
+        Humidity
+       </div>
+       <div class="metric-value" id="humidity">
+        --
+       </div>
+       <div class="metric-foot">
+        Relative humidity
+       </div>
+      </article>
+      <article class="card metric">
+       <div class="metric-top">
+        <span class="metric-icon sun">
+         <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24">
+          <circle cx="12" cy="12" r="4">
+          </circle>
+          <path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4">
+          </path>
+         </svg>
+        </span>
+        <span class="metric-tag">
+         LDR
+        </span>
+       </div>
+       <div class="metric-label">
+        Light condition
+       </div>
+       <div class="metric-value" id="light">
+        --
+       </div>
+       <div class="metric-foot">
+        Digital sensor status
+       </div>
+      </article>
+      <article class="card metric">
+       <div class="metric-top">
+        <span class="metric-icon signal">
+         <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24">
+          <path d="M2 8a16 16 0 0 1 20 0M5 12a11 11 0 0 1 14 0M8.5 16a6 6 0 0 1 7 0">
+          </path>
+          <circle cx="12" cy="20" fill="currentColor" r="1">
+          </circle>
+         </svg>
+        </span>
+        <span class="metric-tag">
+         WI-FI
+        </span>
+       </div>
+       <div class="metric-label">
+        Signal strength
+       </div>
+       <div class="metric-value" id="rssi">
+        --
+       </div>
+       <div class="metric-foot">
+        ESP32 RSSI · dBm
+       </div>
+      </article>
+     </div>
+     <p aria-live="polite" class="tiny" id="telemetryInfo" style="margin:11px 2px 0">
+      Waiting for live ESP32 telemetry. Values are not simulated.
+     </p>
+    </section>
+    <section aria-labelledby="deviceHeading" id="devices">
+     <div class="section-heading">
+      <h2 id="deviceHeading">
+       Device controls
+      </h2>
+      <span class="sub">
+       2 relay channels · software state
+      </span>
+     </div>
+     <div class="devices">
+      <article class="card device-card">
+       <div class="device-head">
+        <span class="device-icon">
+         <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24">
+          <path d="M9 18h6m-5 3h4m-5-6c0-2-4-4-4-8a7 7 0 0 1 14 0c0 4-4 6-4 8H9Z">
+          </path>
+         </svg>
+        </span>
+        <div>
+         <div class="device-name">
+          Red light
+         </div>
+         <div class="device-sub">
+          Channel 01 · LDR automation
+         </div>
+        </div>
+        <span class="device-state" id="redStateBadge">
+         UNKNOWN
+        </span>
+       </div>
+       <div class="device-body">
+        <div>
+         <div class="state-label">
+          Reported state
+         </div>
+         <div aria-live="polite" class="big-state" id="redStatus">
+          --
+         </div>
+         <div class="mode-label" id="redMode">
+          Mode: waiting
+         </div>
+        </div>
+        <div aria-hidden="true" class="light-ring red-light" id="redLight">
+         <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24">
+          <path d="M9 18h6m-5 3h4m-5-6c0-2-4-4-4-8a7 7 0 0 1 14 0c0 4-4 6-4 8H9Z">
+          </path>
+         </svg>
+        </div>
+       </div>
+       <div aria-label="Red light controls" class="control-row" role="group">
+        <button class="primary-red" disabled="" id="redOnBtn" type="button">
+         ON
+        </button>
+        <button disabled="" id="redOffBtn" type="button">
+         OFF
+        </button>
+        <button disabled="" id="redAutoBtn" type="button">
+         AUTO
+        </button>
+        <button disabled="" id="redScheduleBtn" type="button">
+         PLAN
+        </button>
+       </div>
+       <p class="device-feedback" id="redCommandStatus" role="status">
+        Sign in to send commands.
+       </p>
+      </article>
+      <article class="card device-card">
+       <div class="device-head">
+        <span class="device-icon green">
+         <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24">
+          <path d="M9 18h6m-5 3h4m-5-6c0-2-4-4-4-8a7 7 0 0 1 14 0c0 4-4 6-4 8H9Z">
+          </path>
+         </svg>
+        </span>
+        <div>
+         <div class="device-name">
+          Green light
+         </div>
+         <div class="device-sub">
+          Channel 02 · Temperature automation
+         </div>
+        </div>
+        <span class="device-state" id="greenStateBadge">
+         UNKNOWN
+        </span>
+       </div>
+       <div class="device-body">
+        <div>
+         <div class="state-label">
+          Reported state
+         </div>
+         <div aria-live="polite" class="big-state" id="greenStatus">
+          --
+         </div>
+         <div class="mode-label" id="greenMode">
+          Mode: waiting
+         </div>
+        </div>
+        <div aria-hidden="true" class="light-ring green-light" id="greenLight">
+         <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24">
+          <path d="M9 18h6m-5 3h4m-5-6c0-2-4-4-4-8a7 7 0 0 1 14 0c0 4-4 6-4 8H9Z">
+          </path>
+         </svg>
+        </div>
+       </div>
+       <div aria-label="Green light controls" class="control-row" role="group">
+        <button class="primary-green" disabled="" id="greenOnBtn" type="button">
+         ON
+        </button>
+        <button disabled="" id="greenOffBtn" type="button">
+         OFF
+        </button>
+        <button disabled="" id="greenAutoBtn" type="button">
+         AUTO
+        </button>
+        <button disabled="" id="greenScheduleBtn" type="button">
+         PLAN
+        </button>
+       </div>
+       <p class="device-feedback" id="greenCommandStatus" role="status">
+        Sign in to send commands.
+       </p>
+      </article>
+     </div>
+    </section>
+    <section aria-labelledby="automationHeading" id="automation">
+     <div class="section-heading">
+      <h2 id="automationHeading">
+       Automation &amp; preferences
+      </h2>
+      <span class="sub">
+       Saved to Firebase
+      </span>
+     </div>
+     <div class="two-col">
+      <article class="card">
+       <h3>
+        Temperature &amp; notifications
+       </h3>
+       <p class="section-description">
+        Green AUTO uses temperature hysteresis. Adjust limits and buzzer duration below.
+       </p>
+       <div class="fields">
+        <div class="field">
+         <label for="tempOn">
+          Turn ON at (°C)
+         </label>
+         <input disabled="" id="tempOn" max="45" min="20" step="0.5" type="number" value="30"/>
+        </div>
+        <div class="field">
+         <label for="tempOff">
+          Turn OFF at (°C)
+         </label>
+         <input disabled="" id="tempOff" max="44" min="15" step="0.5" type="number" value="28"/>
+        </div>
+        <div class="field">
+         <label for="ledBeepMs">
+          Light-change buzzer (ms)
+         </label>
+         <input disabled="" id="ledBeepMs" max="5000" min="0" step="100" type="number" value="1000"/>
+        </div>
+        <div class="field">
+         <label for="tempBeepMs">
+          Temperature-alert buzzer (ms)
+         </label>
+         <input disabled="" id="tempBeepMs" max="10000" min="0" step="100" type="number" value="5000"/>
+        </div>
+       </div>
+       <div class="divider">
+       </div>
+       <h3>
+        Quick presets
+       </h3>
+       <p class="section-description" style="margin-bottom:7px">
+        Choosing a preset immediately saves its thresholds and buzzer values, preserving the schedule fields.
+       </p>
+       <div class="preset-row">
+        <button class="presetBtn" data-preset="NORMAL" disabled="" type="button">
+         Normal
+        </button>
+        <button class="presetBtn" data-preset="QUIET" disabled="" type="button">
+         Quiet
+        </button>
+        <button class="presetBtn" data-preset="DEMO" disabled="" type="button">
+         Demo
+        </button>
+       </div>
+      </article>
+      <article class="card">
+       <h3>
+        Schedule planner
+       </h3>
+       <p class="section-description">
+        Set local IST times, save settings, then use PLAN on the light card. Browser can close after settings are applied.
+       </p>
+       <div class="schedule-group">
+        <div class="schedule-header">
+         <span class="schedule-name" style="color:#ffa0ae">
+          ●  Red light
+         </span>
+         <span class="schedule-indicator">
+          Channel 01
+         </span>
+        </div>
+        <div class="fields">
+         <div class="field">
+          <label for="redStart">
+           ON time
+          </label>
+          <input disabled="" id="redStart" type="time" value="08:00"/>
+         </div>
+         <div class="field">
+          <label for="redEnd">
+           OFF time
+          </label>
+          <input disabled="" id="redEnd" type="time" value="20:00"/>
+         </div>
+         <div class="field" style="grid-column:1/-1">
+          <label for="redDays">
+           Active days
+          </label>
+          <select disabled="" id="redDays">
+           <option value="127">
+            Every day
+           </option>
+           <option value="62">
+            Monday – Friday
+           </option>
+           <option value="65">
+            Saturday – Sunday
+           </option>
+          </select>
+         </div>
+        </div>
+       </div>
+       <div class="divider" style="margin:14px 0">
+       </div>
+       <div class="schedule-group" style="padding-top:0">
+        <div class="schedule-header">
+         <span class="schedule-name" style="color:#73e4bb">
+          ●  Green light
+         </span>
+         <span class="schedule-indicator">
+          Channel 02
+         </span>
+        </div>
+        <div class="fields">
+         <div class="field">
+          <label for="greenStart">
+           ON time
+          </label>
+          <input disabled="" id="greenStart" type="time" value="08:00"/>
+         </div>
+         <div class="field">
+          <label for="greenEnd">
+           OFF time
+          </label>
+          <input disabled="" id="greenEnd" type="time" value="20:00"/>
+         </div>
+         <div class="field" style="grid-column:1/-1">
+          <label for="greenDays">
+           Active days
+          </label>
+          <select disabled="" id="greenDays">
+           <option value="127">
+            Every day
+           </option>
+           <option value="62">
+            Monday – Friday
+           </option>
+           <option value="65">
+            Saturday – Sunday
+           </option>
+          </select>
+         </div>
+        </div>
+       </div>
+       <button class="save" disabled="" id="saveSettingsBtn" type="button">
+        Save all settings →
+       </button>
+       <p class="notice" id="settingsStatus" role="status">
+        Sign in to load saved preferences.
+       </p>
+      </article>
+     </div>
+    </section>
+    <section aria-labelledby="accountHeading" id="account">
+     <div class="section-heading">
+      <h2 id="accountHeading">
+       Account &amp; diagnostics
+      </h2>
+      <span class="sub">
+       Secure Firebase sign-in
+      </span>
+     </div>
+     <div class="two-col">
+      <article class="card account-card">
+       <div class="account-intro">
+        <span class="avatar">
+         <svg aria-hidden="true" fill="none" height="20" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24" width="20">
+          <circle cx="12" cy="8" r="4">
+          </circle>
+          <path d="M4 21c0-5 3-7 8-7s8 2 8 7">
+          </path>
+         </svg>
+        </span>
+        <div>
+         <strong>
+          Dashboard access
+         </strong>
+         <span>
+          Use your authorized dashboard account
+         </span>
+        </div>
+       </div>
+       <form id="loginForm">
+        <div class="login-fields">
+         <div class="field">
+          <label for="email">
+           Email address
+          </label>
+          <input autocomplete="username" id="email" placeholder="Your Firebase dashboard email" required="" type="email"/>
+         </div>
+         <div class="field">
+          <label for="password">
+           Password
+          </label>
+          <input autocomplete="current-password" id="password" placeholder="Your dashboard password" required="" type="password"/>
+         </div>
+        </div>
+        <button class="login-button" id="loginBtn" type="submit">
+         Sign in securely
+        </button>
+       </form>
+       <div class="account-actions">
+        <button disabled="" id="pingBtn" type="button">
+         Test connection
+        </button>
+        <button disabled="" id="logoutBtn" type="button">
+         Sign out
+        </button>
+       </div>
+       <p class="account-status" id="authStatus" role="status">
+        Initializing Firebase…
+       </p>
+      </article>
+      <article class="card">
+       <h3>
+        Session activity
+       </h3>
+       <p class="section-description">
+        Only activity from this browser session is shown. This is not a historical audit log.
+       </p>
+       <div aria-live="polite" class="activity" id="activityLog">
+        <div class="row">
+         <span class="mark">
+         </span>
+         <div>
+          Waiting for a successful sign-in.
+          <time>
+           No activity yet
+          </time>
+         </div>
+        </div>
+       </div>
+       <div class="divider">
+       </div>
+       <h3>
+        Device report
+       </h3>
+       <p class="section-description" style="margin-bottom:0">
+        Reported outputs and acknowledgements are ESP32 software events, not independent measurements of the relay contacts or LEDs.
+       </p>
+      </article>
+     </div>
+    </section>
+    <footer class="footer">
+     <span>
+      Haven Control Center · ESP32 V2
+     </span>
+     <span>
+      Prototype dashboard · Low-voltage LEDs only · Times in IST
+     </span>
+    </footer>
+   </main>
+  </div>
+  <script type="module">
+   import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
+  import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+  import {getDatabase,ref,set,get,onValue,serverTimestamp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js';
+
+  // Public Firebase Web App identifiers, preserved from your working V2 dashboard.
+  // Never place ESP32 DEVICE_PASSWORD or Wi-Fi credentials in a web file.
+  const firebaseConfig={
+    apiKey:'AIzaSyAlycgCKTGBJhrZqd-nAk7ZSnDfGziv3ME',
+    authDomain:'home-automation-project-5a014.firebaseapp.com',
+    databaseURL:'https://home-automation-project-5a014-default-rtdb.firebaseio.com',
+    projectId:'home-automation-project-5a014',
+    storageBucket:'home-automation-project-5a014.firebasestorage.app',
+    messagingSenderId:'681097409691',
+    appId:'1:681097409691:web:744bd24668eb284006823e',
+    measurementId:'G-FJ16R8FH2B'
+  };
+  const DASHBOARD_UID='YgQ87ZLfTsXNKOdxbUoA5mPYpl92';
+  const app=initializeApp(firebaseConfig);
+  const auth=getAuth(app);
+  const db=getDatabase(app);
+  const $=id=>document.getElementById(id);
+  const base='homeAutomation';
+  const outputs={red:{busy:false,pendingId:null,acked:false,timer:null,lastState:null,buttons:['redOnBtn','redOffBtn','redAutoBtn','redScheduleBtn']},green:{busy:false,pendingId:null,acked:false,timer:null,lastState:null,buttons:['greenOnBtn','greenOffBtn','greenAutoBtn','greenScheduleBtn']}};
+  const editable=['tempOn','tempOff','ledBeepMs','tempBeepMs','redStart','redEnd','redDays','greenStart','greenEnd','greenDays'];
+  let unsubscribers=[],settingsReady=false,settingsBusy=false,deviceUpdatedAt=0,serverTimeOffset=0,connected=false,activeSession=0;
+  const allowed=()=>auth.currentUser?.uid===DASHBOARD_UID;
+  const timestamp=()=>new Date().toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit'});
+  const showClock=()=>{$('clock').textContent=`IST · ${timestamp()}`;};
+  showClock();setInterval(showClock,30000);
+  document.querySelectorAll('.nav-link').forEach(link=>link.addEventListener('click',()=>{document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));link.classList.add('active');}));
+
+  function addActivity(message){
+    const log=$('activityLog');
+    if(log.dataset.empty!=='false'){log.replaceChildren();log.dataset.empty='false';}
+    const row=document.createElement('div');row.className='row';
+    const mark=document.createElement('span');mark.className='mark';
+    const text=document.createElement('div');text.textContent=message;
+    const time=document.createElement('time');time.textContent=`Today · ${timestamp()}`;
+    text.appendChild(time);row.append(mark,text);log.prepend(row);
+    while(log.children.length>4)log.lastElementChild.remove();
+  }
+  function refreshControls(){
+    const ok=allowed()&&connected;
+    $('pingBtn').disabled=!ok;
+    $('logoutBtn').disabled=!auth.currentUser;
+    $('saveSettingsBtn').disabled=!ok||settingsBusy;
+    for(const id of editable)$(id).disabled=!ok||settingsBusy;
+    document.querySelectorAll('.presetBtn').forEach(n=>n.disabled=!ok||settingsBusy);
+    for(const output of Object.values(outputs))output.buttons.forEach(id=>{$(id).disabled=!ok||output.busy||(id.endsWith('ScheduleBtn')&&!settingsReady);});
+    $('firebaseBadge').textContent=connected?'Cloud connected':'Cloud disconnected';
+    $('firebaseDot').className='dot'+(connected?' live':' error');
+  }
+  const formatTime=minute=>String(Math.floor(minute/60)).padStart(2,'0')+':'+String(minute%60).padStart(2,'0');
+  function readTime(id){if(!/^([01]\d|2[0-3]):[0-5]\d$/.test($(id).value))throw new Error('Invalid time: '+id);const[h,m]=$(id).value.split(':').map(Number);return h*60+m;}
+  function updateField(id,value){if(value!==undefined&&value!==null&&document.activeElement!==$(id))$(id).value=String(value);}
+  function showHeartbeat(){
+    const badge=$('deviceBadge'),dot=$('deviceDot'),note=$('onlineStatus');
+    if(!allowed()){badge.textContent='Sign-in required';note.textContent='Sign in to view device health';dot.className='dot';return;}
+    if(!connected){badge.textContent='Cloud offline';note.textContent='Firebase connection lost';dot.className='dot error';return;}
+    if(!deviceUpdatedAt){badge.textContent='Not yet verified';note.textContent='Waiting for fresh ESP32 telemetry';dot.className='dot';return;}
+    const age=Math.max(0,Math.round((Date.now()+serverTimeOffset-deviceUpdatedAt)/1000));
+    const fresh=age<25;
+    badge.textContent=fresh?'Recently seen':'Heartbeat delayed';dot.className='dot'+(fresh?' live':' error');
+    note.textContent=fresh?`Last device report ${age}s ago · likely online`:`Last device report ${age}s ago · device may be offline`;
+  }
+  setInterval(showHeartbeat,2000);
+  function disconnectListeners(){unsubscribers.forEach(stop=>stop());unsubscribers=[];for(const item of Object.values(outputs)){clearTimeout(item.timer);item.pendingId=null;item.busy=false;item.acked=false;}settingsReady=false;deviceUpdatedAt=0;connected=false;}
+  function watch(path,fn,errNode){unsubscribers.push(onValue(ref(db,path),fn,error=>{if(errNode)$(errNode).textContent=`Read failed: ${error.code}`;}));}
+  function startMonitoring(){
+    disconnectListeners();
+    watch('.info/connected',snap=>{connected=snap.val()===true;refreshControls();showHeartbeat();});
+    watch('.info/serverTimeOffset',snap=>{if(typeof snap.val()==='number')serverTimeOffset=snap.val();});
+    watch(`${base}/reported/sensors`,snap=>{
+      const v=snap.val();deviceUpdatedAt=typeof v?.updatedAt==='number'?v.updatedAt:0;
+      $('temperature').textContent=v?.valid===true&&Number.isFinite(v.temperature)?`${v.temperature.toFixed(1)} °C`:'--';
+      $('humidity').textContent=v?.valid===true&&Number.isFinite(v.humidity)?`${v.humidity.toFixed(1)} %`:'--';
+      $('light').textContent=typeof v?.dark==='boolean'?(v.dark?'DARK':'BRIGHT'):'--';
+      $('rssi').textContent=Number.isFinite(v?.rssi)?`${v.rssi} dBm`:'--';
+      const date=Number.isFinite(v?.updatedAt)?new Date(v.updatedAt).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}):'unknown';
+      $('telemetryInfo').textContent=!v?'No sensor data has been reported.':`DHT11: ${v.valid?'valid':'unavailable'} · Uptime: ${v.uptimeSec??'?'} s · Last report: ${date} IST`;
+      showHeartbeat();
+    },'telemetryInfo');
+    for(const[color,output]of Object.entries(outputs)){
+      watch(`${base}/reported/${color}`,snap=>{
+        const v=snap.val();output.lastState=typeof v==='boolean'?v:null;
+        $(`${color}Status`).textContent=output.lastState===null?'--':v?'ON':'OFF';
+        const badge=$(`${color}StateBadge`);badge.textContent=output.lastState===null?'UNKNOWN':v?'ON':'OFF';badge.className='device-state'+(output.lastState===null?'':v?' on':' off');
+        $(`${color}Light`).classList.toggle('is-on',v===true);
+      },`${color}Status`);
+      watch(`${base}/reported/modes/${color}`,snap=>{$(`${color}Mode`).textContent=`Mode: ${snap.val()??'waiting'}`;},`${color}Mode`);
+      watch(`${base}/reported/ack/${color}`,snap=>{
+        const ack=snap.val();if(!ack||!output.pendingId||ack.requestId!==output.pendingId)return;
+        output.acked=true;clearTimeout(output.timer);
+        const applied=ack.result==='APPLIED';
+        $(`${color}CommandStatus`).textContent=applied?'ESP32 processed the command (software ACK).':'Command skipped by ESP32; check physical controls.';
+        addActivity(`${color.toUpperCase()} command: ${applied?'processed':'skipped'} by ESP32`);
+        output.pendingId=null;
+      },`${color}CommandStatus`);
+    }
+    watch(`${base}/settings`,snap=>{
+      const v=snap.val();if(!v){settingsReady=false;$('settingsStatus').textContent='No settings saved yet. Save preferences before using PLAN.';refreshControls();return;}
+      settingsReady=true;
+      ['tempOn','tempOff','ledBeepMs','tempBeepMs'].forEach(key=>updateField(key,v[key]));
+      for(const color of ['red','green']){const plan=v[color==='red'?'scheduleRed':'scheduleGreen'];if(plan&&Number.isInteger(plan.onMinute)&&Number.isInteger(plan.offMinute)){updateField(`${color}Start`,formatTime(plan.onMinute));updateField(`${color}End`,formatTime(plan.offMinute));updateField(`${color}Days`,plan.daysMask);}}
+      $('settingsStatus').textContent='Settings loaded from Firebase. Device typically checks updates every ~10 seconds.';refreshControls();
+    },'settingsStatus');
+  }
+  onAuthStateChanged(auth,user=>{
+    activeSession++;
+    if(!user){disconnectListeners();$('authStatus').textContent='Sign in using your authorized dashboard account.';for(const color of ['red','green']){$(`${color}Status`).textContent='--';$(`${color}Mode`).textContent='Mode: waiting';$(`${color}CommandStatus`).textContent='Sign in to send commands.';$(`${color}StateBadge`).textContent='UNKNOWN';$(`${color}StateBadge`).className='device-state';$(`${color}Light`).classList.remove('is-on');}for(const id of ['temperature','humidity','light','rssi'])$(id).textContent='--';$('telemetryInfo').textContent='Sign in to view sensor data.';$('settingsStatus').textContent='Sign in to load settings.';}
+    else if(!allowed()){disconnectListeners();$('authStatus').textContent='This account is not authorized. Sign out, then use the dashboard account.';}
+    else{$('authStatus').textContent='Signed in. Connecting to Realtime Database…';addActivity('Dashboard account signed in');startMonitoring();}
+    refreshControls();showHeartbeat();
+  });
+  $('loginForm').addEventListener('submit',async event=>{event.preventDefault();$('loginBtn').disabled=true;try{await signInWithEmailAndPassword(auth,$('email').value.trim(),$('password').value);$('password').value='';}catch(error){$('authStatus').textContent=`Sign-in failed: ${error.code}`;}finally{$('loginBtn').disabled=false;}});
+  $('logoutBtn').addEventListener('click',async()=>{try{await signOut(auth);addActivity('Dashboard account signed out');}catch(error){$('authStatus').textContent=`Sign-out failed: ${error.code}`;}});
+  $('pingBtn').addEventListener('click',async()=>{
+    if(!allowed()||!connected)return;$('pingBtn').disabled=true;
+    try{const path=ref(db,`${base}/commands/test`);await set(path,'ping');const check=await get(path);$('authStatus').textContent=check.val()==='ping'?'PING written and read successfully.':'PING write completed but read value differed.';addActivity('Cloud PING test completed');}
+    catch(error){$('authStatus').textContent=`PING failed: ${error.code}`;}
+    finally{refreshControls();}
+  });
+  function readSettings(){
+    const tempOn=Number($('tempOn').value),tempOff=Number($('tempOff').value),ledBeepMs=Number($('ledBeepMs').value),tempBeepMs=Number($('tempBeepMs').value);
+    if(!['tempOn','tempOff','ledBeepMs','tempBeepMs'].every(id=>$(id).value.trim()!==''))throw new Error('Complete the temperature and buzzer fields.');
+    if(![tempOn,tempOff,ledBeepMs,tempBeepMs].every(Number.isFinite)||tempOn<20||tempOn>45||tempOff<15||tempOff>44||tempOn-tempOff<1||!Number.isInteger(ledBeepMs)||ledBeepMs<0||ledBeepMs>5000||!Number.isInteger(tempBeepMs)||tempBeepMs<0||tempBeepMs>10000)throw new Error('Invalid values. ON must exceed OFF by at least 1 °C; check buzzer limits.');
+    const plan=color=>{const onMinute=readTime(color+'Start'),offMinute=readTime(color+'End'),daysMask=Number($(color+'Days').value);if(onMinute===offMinute||![127,62,65].includes(daysMask))throw new Error('Schedule ON/OFF times must differ and valid days must be selected.');return{onMinute,offMinute,daysMask};};
+    return{tempOn,tempOff,ledBeepMs,tempBeepMs,scheduleRed:plan('red'),scheduleGreen:plan('green'),issuedAt:serverTimestamp()};
+  }
+  async function saveSettings(){
+    if(!allowed()||!connected||settingsBusy)return;let config;
+    try{config=readSettings();}catch(error){$('settingsStatus').textContent=error.message;return;}
+    settingsBusy=true;refreshControls();$('settingsStatus').textContent='Saving preferences…';
+    try{await set(ref(db,`${base}/settings`),config);settingsReady=true;$('settingsStatus').textContent='Settings saved. Allow ~10 seconds for the ESP32 to apply them.';addActivity('Automation preferences saved');}
+    catch(error){$('settingsStatus').textContent=`Save failed: ${error.code}. Wait a second before retrying.`;}
+    finally{settingsBusy=false;refreshControls();}
+  }
+  $('saveSettingsBtn').addEventListener('click',saveSettings);
+  const presets={NORMAL:{tempOn:30,tempOff:28,ledBeepMs:1000,tempBeepMs:5000},QUIET:{tempOn:30,tempOff:28,ledBeepMs:0,tempBeepMs:0},DEMO:{tempOn:26,tempOff:24,ledBeepMs:300,tempBeepMs:1000}};
+  document.querySelectorAll('.presetBtn').forEach(button=>button.addEventListener('click',async()=>{if(!allowed()||!connected||settingsBusy)return;Object.entries(presets[button.dataset.preset]).forEach(([id,val])=>$(id).value=val);await saveSettings();}));
+  async function sendCommand(color,mode,on){
+    if(!allowed()||!connected)return;const output=outputs[color];if(output.busy)return;
+    if(mode==='SCHEDULE'&&!settingsReady){$(`${color}CommandStatus`).textContent='Save settings before enabling the schedule.';return;}
+    output.busy=true;refreshControls();const requestId=typeof crypto.randomUUID==='function'?crypto.randomUUID():`${Date.now()}-${Math.random().toString(36).slice(2)}`;const session=activeSession;
+    output.pendingId=requestId;output.acked=false;clearTimeout(output.timer);
+    const message=$(`${color}CommandStatus`);message.textContent='Sending command to Firebase…';
+    try{
+      await set(ref(db,`${base}/commands/${color}`),{mode,on,requestId,issuedAt:serverTimestamp()});
+      if(session===activeSession){addActivity(`${color.toUpperCase()} ${mode==='MANUAL'?(on?'ON':'OFF'):mode} command saved`);if(output.pendingId===requestId&&!output.acked){message.textContent='Command stored. Waiting for ESP32 acknowledgement…';output.timer=setTimeout(()=>{if(output.pendingId===requestId){message.textContent='No ESP32 acknowledgement after 20 seconds. Check hardware and Serial Monitor.';output.pendingId=null;}},20000);}}
+    }catch(error){if(session===activeSession){message.textContent=`Command rejected: ${error.code}. Wait a second and retry.`;if(output.pendingId===requestId){output.pendingId=null;clearTimeout(output.timer);}}}
+    finally{output.busy=false;refreshControls();}
+  }
+  for(const color of ['red','green']){
+    $(`${color}OnBtn`).addEventListener('click',()=>sendCommand(color,'MANUAL',true));
+    $(`${color}OffBtn`).addEventListener('click',()=>sendCommand(color,'MANUAL',false));
+    $(`${color}AutoBtn`).addEventListener('click',()=>sendCommand(color,'AUTO',false));
+    $(`${color}ScheduleBtn`).addEventListener('click',()=>sendCommand(color,'SCHEDULE',false));
+  }
+  </script>
+ </body>
+</html>
